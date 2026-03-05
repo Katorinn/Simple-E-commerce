@@ -18,7 +18,7 @@ public:
         this->price = 0.0;
     }
 
-    // Constructor có tham s?
+     Constructor có tham s?
     Product(string PID, string name, int quantity, double price) {
         this->PID = PID;
         this->name = name;
