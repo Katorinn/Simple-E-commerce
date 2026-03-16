@@ -1,5 +1,173 @@
 //QuangAnh
+#include <iostream>
+#include <vector>
+using namespace std;
 
+class Product {
+public:
+    int id;
+    string name;
+    int stock;
+};
+
+class CartLine {
+public:
+    int customerId;
+    int productId;
+    int qty;
+};
+
+class OrderItem {
+public:
+    int productId;
+    int qty;
+};
+
+class Order {
+public:
+    string orderId;
+    int customerId;
+    string date;
+    vector<OrderItem> items;
+};
+
+vector<Product> products;
+vector<CartLine> cart;
+vector<Order> orders;
+
+bool productExists(int productId) {
+    for (auto p : products)
+        if (p.id == productId)
+            return true;
+    return false;
+}
+
+bool addToCart(int customerId, int productId, int qty) {
+
+    if (!productExists(productId) || qty <= 0)
+        return false;
+
+    for (auto &c : cart) {
+        if (c.customerId == customerId && c.productId == productId) {
+            c.qty += qty;
+            return true;
+        }
+    }
+
+    CartLine newLine;
+    newLine.customerId = customerId;
+    newLine.productId = productId;
+    newLine.qty = qty;
+
+    cart.push_back(newLine);
+    return true;
+}
+
+bool removeFromCart(int customerId, int productId) {
+
+    for (int i = 0; i < cart.size(); i++) {
+        if (cart[i].customerId == customerId &&
+            cart[i].productId == productId) {
+
+            cart.erase(cart.begin() + i);
+            return true;
+        }
+    }
+
+    return false;
+}
+
+string checkout(int customerId, string date) {
+
+    vector<CartLine> customerCart;
+
+    for (auto c : cart)
+        if (c.customerId == customerId)
+            customerCart.push_back(c);
+
+    if (customerCart.empty())
+        return "false";
+
+    for (auto item : customerCart) {
+        for (auto &p : products) {
+            if (p.id == item.productId && p.stock < item.qty)
+                return "false";
+        }
+    }
+
+    Order newOrder;
+    newOrder.orderId = "ORD" + to_string(orders.size() + 1);
+    newOrder.customerId = customerId;
+    newOrder.date = date;
+
+    for (auto item : customerCart) {
+
+        OrderItem oi;
+        oi.productId = item.productId;
+        oi.qty = item.qty;
+
+        newOrder.items.push_back(oi);
+
+        for (auto &p : products)
+            if (p.id == item.productId)
+                p.stock -= item.qty;
+    }
+
+    orders.push_back(newOrder);
+
+    for (int i = cart.size() - 1; i >= 0; i--)
+        if (cart[i].customerId == customerId)
+            cart.erase(cart.begin() + i);
+
+    return newOrder.orderId;
+}
+
+void showCart(int customerId) {
+    cout << "Cart:\n";
+    for (auto c : cart)
+        if (c.customerId == customerId)
+            cout << "Product " << c.productId << " Qty " << c.qty << endl;
+}
+
+int main() {
+
+    products.push_back({101, "Keyboard", 10});
+    products.push_back({102, "Mouse", 5});
+
+    int choice;
+    int customerId = 1;
+
+    do {
+        cout << "\n1.Add to cart\n";
+        cout << "2.Remove from cart\n";
+        cout << "3.Show cart\n";
+        cout << "4.Checkout\n";
+        cout << "5.Exit\n";
+        cout << "Choose: ";
+        cin >> choice;
+
+        if (choice == 1) {
+            int pid, qty;
+            cin >> pid >> qty;
+            cout << addToCart(customerId, pid, qty) << endl;
+        }
+
+        if (choice == 2) {
+            int pid;
+            cin >> pid;
+            cout << removeFromCart(customerId, pid) << endl;
+        }
+
+        if (choice == 3) {
+            showCart(customerId);
+        }
+
+        if (choice == 4) {
+            cout << checkout(customerId, "2026-03-09") << endl;
+        }
+
+    } while (choice != 5);
+}
 
 
 
