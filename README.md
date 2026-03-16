@@ -297,5 +297,130 @@ void setstock(int s){
 
 //Thang
 //QuanAnh
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <sstream>
+#include <cstdlib>
+using namespace std;
 
+struct Product
+{
+    int id;
+    string name;
+    int price;
+    int stock;
+};
+
+void showMenu()
+{
+    cout << "\n====== SHOP MENU ======\n";
+    cout << "1. Show products\n";
+    cout << "2. Save products to CSV\n";
+    cout << "3. Exit\n";
+    cout << "Choose: ";
+}
+
+void showProducts(vector<Product> products)
+{
+    cout << "\n------ PRODUCT LIST ------\n";
+
+    for (int i = 0; i < products.size(); i++)
+    {
+        cout << "ID: " << products[i].id << endl;
+        cout << "Name: " << products[i].name << endl;
+        cout << "Price: " << products[i].price << endl;
+        cout << "Stock: " << products[i].stock << endl;
+        cout << "------------------------\n";
+    }
+}
+
+void saveProductsCSV(vector<Product> products)
+{
+    ofstream file("products (1)");
+
+    for (int i = 0; i < products.size(); i++)
+    {
+        file << products[i].id << ","
+             << products[i].name << ","
+             << products[i].price << ","
+             << products[i].stock << endl;
+    }
+
+    file.close();
+
+    cout << "Data saved to products.csv\n";
+}
+
+vector<Product> loadProductsCSV()
+{
+    vector<Product> products;
+
+    ifstream file("products.csv");
+
+    string line;
+
+    while (getline(file, line))
+    {
+        Product p;
+
+        stringstream ss(line);
+        string temp;
+
+        getline(ss, temp, ',');
+        p.id = atoi(temp.c_str());
+
+        getline(ss, p.name, ',');
+
+        getline(ss, temp, ',');
+        p.price = atoi(temp.c_str());
+
+        getline(ss, temp, ',');
+        p.stock = atoi(temp.c_str());
+
+        products.push_back(p);
+    }
+
+    file.close();
+
+    return products;
+}
+
+int main()
+{
+    vector<Product> products = loadProductsCSV();
+
+    int choice;
+
+    do
+    {
+        showMenu();
+        cin >> choice;
+
+        switch (choice)
+        {
+        case 1:
+            showProducts(products);
+            break;
+
+        case 2:
+            saveProductsCSV(products);
+            break;
+
+        case 3:
+            cout << "Goodbye!\n";
+            break;
+
+        default:
+            cout << "Invalid choice\n";
+        }
+
+    } while (choice != 3);
+
+    return 0;
+}
+    } while (choice != 3);
+
+    return 0;
+}
 //QuocAnh
