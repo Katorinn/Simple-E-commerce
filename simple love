@@ -224,8 +224,15 @@ int main() {
 
         if (choice == 2) {
             int pid, qty;
-            cin >> pid >> qty;
-            cout << addToCart(customerId, pid, qty) << endl;
+           cout << "Enter product ID: ";
+cin >> pid;
+
+cout << "Enter quantity: ";
+cin >> qty;
+           if (addToCart(customerId, pid, qty))
+    cout << "Added successfully\n";
+else
+    cout << "Failed\n";
         }
 
         if (choice == 3) {
@@ -241,7 +248,7 @@ int main() {
 
         if (choice == 6) saveProductsCSV();
 
-    } while (choice != 6);
+    	} while (choice != 6);
 
     return 0;
 }
